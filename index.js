@@ -9,6 +9,7 @@ import {
   StyleSheet,
   View,
   Text,
+  Platform
 } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -91,7 +92,14 @@ class PercentageCircle extends Component {
       rightTransformerDegree = '180deg';
       leftTransformerDegree = (percent - 50) * 3.6 + 'deg';
     } else {
-      rightTransformerDegree = percent * 3.6 + 'deg';
+      if (Platform.OS == 'ios') {
+        leftTransformerDegree = '0deg';
+        rightTransformerDegree = percent * 3.6 + 'deg';
+      }
+      else{
+        leftTransformerDegree = '0deg';
+        rightTransformerDegree = -(50-percent) * 3.6 + 'deg';
+      }
     }
     this.setState({
       percent: this.props.percent,
@@ -105,62 +113,60 @@ class PercentageCircle extends Component {
     if (this.props.disabled) {
       return (
         <View style={[styles.circle,{
-          width:this.props.radius*2,
+        width:this.props.radius*2,
           height: this.props.radius*2,
           borderRadius:this.props.radius
-        }]}>
-          <Text style={styles.text}>{this.props.disabledText}</Text>
-        </View>
-      );
+      }]}>
+    <Text style={styles.text}>{this.props.disabledText}</Text>
+      </View>
+    );
     }
     return (
       <View style={[styles.circle,{
-        width:this.props.radius*2,
+      width:this.props.radius*2,
         height: this.props.radius*2,
         borderRadius:this.props.radius,
         backgroundColor: this.props.bgcolor
-      }]}>
-        <View style={[styles.leftWrap,{
-          width: this.props.radius,
-          height: this.props.radius * 2,
-          left:0,
-        }]}>
-          <View style={[styles.loader,{
-            left: this.props.radius,
-            width:this.props.radius,
-            height: this.props.radius*2,
-            borderTopLeftRadius:0,
-            borderBottomLeftRadius:0,
-            backgroundColor:this.props.color,
-            transform:[{translateX:-this.props.radius/2},{rotate:this.state.leftTransformerDegree},{translateX:this.props.radius/2}],
-          }]}></View>
-        </View>
-        <View style={[styles.leftWrap,{
-          left:this.props.radius,
-          width: this.props.radius,
-          height: this.props.radius * 2,
-        }]}>
-          <View style={[styles.loader,{
-            left:-this.props.radius,
-            width:this.props.radius,
-            height: this.props.radius*2,
-            borderTopRightRadius:0,
-            borderBottomRightRadius:0,
-            backgroundColor: this.props.color,
-            transform:[{translateX:this.props.radius/2},{rotate:this.state.rightTransformerDegree},{translateX:-this.props.radius/2}],
-          }]}></View>
-        </View>
-        <View style={[styles.innerCircle,{
-              width:(this.props.radius - this.state.borderWidth)*2,
-              height:(this.props.radius - this.state.borderWidth)*2,
-              borderRadius:this.props.radius - this.state.borderWidth,
-              backgroundColor: this.props.innerColor,
-            }]}>
-          {this.props.children ? this.props.children :
-            <Text style={[styles.text, this.state.textStyle]}>{this.props.percent}%</Text>}
-        </View>
+    }]}>
+  <View style={[styles.leftWrap,{
+      width: this.props.radius,
+        height: this.props.radius * 2,
+        left:0,
+    }]}>
+  <View style={[styles.loader,{
+      left: this.props.radius,
+        width:this.props.radius,
+        height: this.props.radius*2,
+        borderTopLeftRadius:0,
+        borderBottomLeftRadius:0,
+        backgroundColor:this.props.color,
+    }]}></View>
+    </View>
+    <View style={[styles.leftWrap,{
+      left:this.props.radius,
+        width: this.props.radius,
+        height: this.props.radius * 2,
+    }]}>
+  <View style={[styles.loader,{
+      left:-this.props.radius,
+        width:this.props.radius,
+        height: this.props.radius*2,
+        borderTopRightRadius:0,
+        borderBottomRightRadius:0,
+        backgroundColor: Platform.OS == 'ios' ? this.props.color : this.props.percent < 50 ? this.props.bgcolor : this.props.color,
+    }]}></View>
+    </View>
+    <View style={[styles.innerCircle,{
+      width:(this.props.radius - this.state.borderWidth)*2,
+        height:(this.props.radius - this.state.borderWidth)*2,
+        borderRadius:this.props.radius - this.state.borderWidth,
+        backgroundColor: this.props.innerColor,
+    }]}>
+    {this.props.children ? this.props.children :
+    <Text style={[styles.text, this.state.textStyle]}>{this.props.percent}%</Text>}
+    </View>
 
-      </View>
+    </View>
     );
   }
 }
